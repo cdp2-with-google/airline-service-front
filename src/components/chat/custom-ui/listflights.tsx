@@ -1,5 +1,5 @@
 import React from 'react';
-import airlineLogo from '../../assets/koreanair.png';
+import airlineLogo from '../../../assets/koreanair.png';
 
 interface Flight {
   id: number;

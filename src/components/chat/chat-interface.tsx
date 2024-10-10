@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useGeminiChat } from '../../lib/useGeminiChat';
 import { Send } from 'lucide-react';
 
-import { BoardingPass } from './boardingpass';
-import { Destinations } from './destinations';
-import { ListFlights } from './listflights';
-import { PurchaseTickets } from './purchasetickets';
-import { FlightStatus } from './flightstatus';
+import { BoardingPass } from './custom-ui/boardingpass';
+import { Destinations } from './custom-ui/destinations';
+import { ListFlights } from './custom-ui/listflights';
+import { PurchaseTickets } from './custom-ui/purchasetickets';
+import { FlightStatus } from './custom-ui/flightstatus';
 
 const ChatInterface: React.FC = () => {
   const [userInput, setUserInput] = useState('');

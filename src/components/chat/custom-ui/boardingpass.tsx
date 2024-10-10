@@ -1,6 +1,6 @@
 import React from 'react';
 import Barcode from 'react-barcode';
-import airlineLogo from '../../assets/koreanair.png';
+import airlineLogo from '../../../assets/koreanair.png';
 
 interface BoardingPassProps {
   summary?: {

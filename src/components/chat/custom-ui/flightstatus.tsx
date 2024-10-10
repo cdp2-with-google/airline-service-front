@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowDownRight, ArrowUpRight, Check, Sparkles } from 'lucide-react';
-import airlineLogo from '../../assets/koreanair.png';
+import airlineLogo from '../../../assets/koreanair.png';
 
 export interface StatusProps {
   summary?: {
