@@ -2,11 +2,19 @@ import React, { useEffect, useState } from 'react';
 import backgroundImage0 from '../../../assets/main_background_image0.jpg';
 import backgroundImage1 from '../../../assets/main_background_image1.jpg';
 import backgroundImage2 from '../../../assets/main_background_image2.jpg';
+import { useNavigate } from 'react-router';
+import { PATHS } from '../../../constants/paths';
 
 const BACKGROUND_IMAGES = [backgroundImage0, backgroundImage1, backgroundImage2];
 
 const Main: React.FC = () => {
+  const navigate = useNavigate();
+
   const [backgroundImageIndex, setBackgroundImageIndex] = useState(0);
+
+  const handleStartChat = () => {
+    navigate(PATHS.CHAT);
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -81,7 +89,10 @@ const Main: React.FC = () => {
               </div>
 
               <div className="space h-[calc(100vh-540px)]" />
-              <button className="button border-2 border-white flex items-center justify-center p-4">
+              <button
+                onClick={handleStartChat}
+                className="button border-2 border-white flex items-center justify-center p-4"
+              >
                 <div className="t-get-started text-white text-[18px] font-semibold">Start Your Journey</div>
               </button>
               <div className="indicators flex gap-2 m-8">
