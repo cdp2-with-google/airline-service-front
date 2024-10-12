@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import { PATHS } from './constants/paths.ts';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Main from './components/pages/Main.tsx';
+import Main from './components/pages/Main';
 import Chat from './components/pages/Chat.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
