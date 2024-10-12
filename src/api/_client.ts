@@ -1,22 +1,28 @@
 import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../constants/api';
 
-// TODO: axios 인스턴스 생성 (예시로 해놨기에 추후 백엔드와 맞춰 변경 필요)
-const client = axios.create({ baseURL: BASE_URL + '/api/v1' });
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-client.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError): Promise<never> | void => {
-    if (error.response?.status === 401) {
-      window.alert('로그인이 만료되었습니다.\n다시 로그인해주세요.');
-
-      return;
-    }
-
-    window.alert('알 수 없는 오류가 발생되었습니다.\n잠시 후 다시 이용바랍니다.');
-
-    return Promise.reject(error);
+// Axios Error 처리 함수
+export const axiosError = (error: AxiosError) => {
+  if (error.response) {
+    // 서버가 응답했지만, 에러
+    console.error('Response error:', error.response.data);
+    return error.response.data;
+  } else if (error.request) {
+    // 요청이 전송되었지만, 응답이 없음
+    console.error('No response received:', error.request);
+    return 'No response from server';
+  } else {
+    // 요청을 설정하는 동안 에러 발생
+    console.error('Error setting up request:', error.message);
+    return error.message;
   }
-);
+};
 
-export default client;
+export default apiClient;
