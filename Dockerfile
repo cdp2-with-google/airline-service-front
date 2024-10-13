@@ -14,7 +14,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
 # 6. 전체 소스 코드를 복사
-COPY . .
+COPY . ./
 
 # 7. Vite로 빌드 (React 애플리케이션을 정적 파일로 빌드)
 RUN pnpm run build
@@ -26,7 +26,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # 10. Nginx 포트를 노출 (Cloud Run의 경우 필요)
-EXPOSE 3000
+EXPOSE 80
 
 # 11. Nginx 실행 (daemon off로 포그라운드 모드 실행)
 CMD ["nginx", "-g", "daemon off;"]
