@@ -14,10 +14,10 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
 # 6. 전체 소스 코드를 복사
-COPY . ./
+COPY . /app
 
 # 7. Vite로 빌드 (React 애플리케이션을 정적 파일로 빌드)
-RUN pnpm run build
+RUN pnpm build
 
 # 8. Nginx를 사용할 이미지를 설정 (배포용)
 FROM nginx:alpine
