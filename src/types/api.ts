@@ -1,5 +1,7 @@
 // Conversation ID 목록을 가져오는 API의 응답 타입
-export type ConversationIdListResponse = number[];
+export type ConversationIdListResponse = {
+  list: number[];
+};
 
 // 특정 대화의 상세 정보를 가져오는 API의 응답 타입
 export type ConversationDetailsResponse = {
