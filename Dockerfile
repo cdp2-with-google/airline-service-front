@@ -22,14 +22,14 @@ RUN pnpm build
 # 8. Nginx를 사용할 이미지를 설정 (배포용)
 FROM nginx:alpine
 
-# 9. Nginx 포트를 8080으로 변경
-RUN sed -i 's/listen 80;/listen 8080;/' /etc/nginx/conf.d/default.conf
+# 9. Nginx 설정 파일 복사
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 10. 빌드된 애플리케이션을 Nginx의 기본 경로로 복사
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# 11. Cloud Run에서 요구하는 포트 8080을 노출
-EXPOSE 8080
+# 11. Cloud Run에서 요구하는 포트 80을 노출
+EXPOSE 80
 
 # 12. Nginx 실행 (daemon off로 포그라운드 모드 실행)
 CMD ["nginx", "-g", "daemon off;"]
