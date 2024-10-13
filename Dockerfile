@@ -26,7 +26,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # 10. Nginx 포트를 노출 (Cloud Run의 경우 필요)
-EXPOSE 80
+EXPOSE 8080
 
 # 11. Nginx 실행 (daemon off로 포그라운드 모드 실행)
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["pnpm", "run", "preview", "--host", "0.0.0.0", "--port", "8080"]
