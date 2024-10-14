@@ -1,22 +1,37 @@
 import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../constants/api';
 
-// TODO: axios 인스턴스 생성 (예시로 해놨기에 추후 백엔드와 맞춰 변경 필요)
-const client = axios.create({ baseURL: BASE_URL + '/api/v1' });
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-client.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError): Promise<never> | void => {
-    if (error.response?.status === 401) {
-      window.alert('로그인이 만료되었습니다.\n다시 로그인해주세요.');
+// Axios Error 처리 함수
+export const axiosError = (error: unknown) => {
+  // 에러가 AxiosError인지 확인
+  if (axios.isAxiosError(error)) {
+    const axiosErr = error as AxiosError;
 
-      return;
+    if (axiosErr.response) {
+      // 서버가 응답했지만, 에러가 발생한 경우
+      console.error('Response error:', axiosErr.response.data);
+      return axiosErr.response.data;
+    } else if (axiosErr.request) {
+      // 요청이 전송되었지만 응답이 없는 경우
+      console.error('No response received:', axiosErr.request);
+      return 'No response from server';
+    } else {
+      // 요청을 설정하는 동안 에러가 발생한 경우
+      console.error('Error setting up request:', axiosErr.message);
+      return axiosErr.message;
     }
-
-    window.alert('알 수 없는 오류가 발생되었습니다.\n잠시 후 다시 이용바랍니다.');
-
-    return Promise.reject(error);
+  } else {
+    // AxiosError가 아닌 에러 처리
+    console.error('Non-Axios error:', error);
+    return 'Unknown error occurred';
   }
-);
+};
 
-export default client;
+export default apiClient;
