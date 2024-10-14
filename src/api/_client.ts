@@ -1,4 +1,3 @@
-// C:\HYUNWOO\react\airline-service\airline-service-front\src\api\_client.ts
 import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../constants/api';
 

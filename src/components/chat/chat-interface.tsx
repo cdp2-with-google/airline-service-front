@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Send, Plus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import { usePostConversation, useConversationIdList, useConversationDetails } from '../../api/conversations'; // API 연결
+import { usePostConversation, useConversationIdList, useConversationDetails } from '../../api/conversations';
 import { BoardingPass } from './custom-ui/boardingpass';
 import { Destinations } from './custom-ui/destinations';
 import { ListFlights } from './custom-ui/listflights';
 import { PurchaseTickets } from './custom-ui/purchasetickets';
 import { FlightStatus } from './custom-ui/flightstatus';
 
-// 메시지 타입 정의
 type Message = {
   role: 'user' | 'assistant';
   content: string | React.ReactNode;
@@ -19,23 +18,24 @@ const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationId, setConversationId] = useState<number | null>(null);
   const { handlePostConversation } = usePostConversation();
+  const messagesEndRef = useRef<HTMLDivElement | null>(null); // 메시지 끝부분 참조
 
-  // 대화 목록 불러오기
   const { data: conversationIds, isLoading: isLoadingConversationIds } = useConversationIdList();
 
-  // 대화 목록을 콘솔에 출력
   useEffect(() => {
-    console.log('대화 ID 목록:', conversationIds);
+    if (conversationIds && conversationIds.list.length > 0) {
+      const maxId = Math.max(...conversationIds.list);
+      setConversationId(maxId);
+      console.log('자동으로 선택된 대화 ID:', maxId);
+    }
   }, [conversationIds]);
 
-  // 대화 상세 불러오기 (conversationId가 null이 아닌 경우에만)
   const {
     data: conversationDetails,
     isLoading: isLoadingConversationDetails,
     refetch,
   } = useConversationDetails(conversationId ?? -1);
 
-  // 대화 ID가 변경될 때마다 refetch로 대화 상세를 불러옴
   useEffect(() => {
     if (conversationId !== null) {
       refetch();
@@ -43,7 +43,6 @@ const ChatInterface: React.FC = () => {
     }
   }, [conversationId, refetch]);
 
-  // 대화 상세 내용을 콘솔에 출력하고 메시지 업데이트
   useEffect(() => {
     if (conversationDetails) {
       console.log('대화 상세 내용:', conversationDetails);
@@ -57,12 +56,16 @@ const ChatInterface: React.FC = () => {
     }
   }, [conversationDetails]);
 
-  // 대화 선택 핸들러
   const handleSelectConversation = (id: number) => {
     setConversationId(id);
   };
 
-  // 메시지 전송 핸들러
+  const handleStartNewConversation = () => {
+    setConversationId(null);
+    setMessages([]);
+    console.log('새로운 대화 시작');
+  };
+
   const handleSendMessage = async () => {
     if (userInput.trim()) {
       setMessages((prev) => [...prev, { role: 'user', content: userInput }]);
@@ -81,7 +84,7 @@ const ChatInterface: React.FC = () => {
 
           const answer = response.data.answer;
           setMessages((prev) => [...prev, { role: 'assistant', content: answer }]);
-          console.log('API 응답:', response); // API 응답을 콘솔에 출력
+          console.log('API 응답:', response);
         }
       } catch (error) {
         console.error('API 요청 중 오류 발생:', error);
@@ -91,6 +94,17 @@ const ChatInterface: React.FC = () => {
       setUserInput('');
     }
   };
+
+  // 스크롤을 대화 목록의 하단으로 이동
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]); // 메시지가 업데이트될 때마다 스크롤 이동
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -105,7 +119,6 @@ const ChatInterface: React.FC = () => {
 
   const renderMessageContent = (content: string | React.ReactNode) => {
     if (typeof content === 'string') {
-      // 모든 텍스트를 마크다운으로 변환
       return <ReactMarkdown>{content}</ReactMarkdown>;
     } else {
       return React.isValidElement(content) ? content : null;
@@ -114,56 +127,69 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* 왼쪽 사이드바 */}
-      <div className="w-1/4 bg-gray-200 p-4 border-r border-gray-300">
-        <h2 className="text-lg font-bold mb-4">대화 목록</h2>
-        {isLoadingConversationIds ? (
-          <div>대화 목록 불러오는 중...</div>
-        ) : !conversationIds || conversationIds.list.length === 0 ? (
-          <div>대화 목록이 없습니다.</div>
-        ) : (
-          <ul className="space-y-2">
-            {conversationIds.list.map((id: number) => (
-              <li key={id}>
-                <button
-                  onClick={() => handleSelectConversation(id)}
-                  className={`w-full text-left px-4 py-2 rounded-lg focus:outline-none focus:ring-2 transition duration-150 ease-in-out transform hover:scale-105 ${
-                    conversationId === id ? 'bg-purple-700 text-white' : 'bg-purple-500 text-white hover:bg-purple-600'
-                  }`}
-                >
-                  대화 {id} 보기
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* 대화 내용 표시 영역 */}
-      <div className="flex-1 flex flex-col overflow-y-auto p-4">
-        <div className="max-w-3xl mx-auto flex-1">
-          {isLoadingConversationDetails ? (
-            <div>대화 내용 불러오는 중...</div>
+      <div className="w-1/5 bg-gray-200 border-r border-gray-300 flex flex-col">
+        <div className="flex-grow overflow-y-auto p-4">
+          <h2 className="text-lg font-bold mb-4">대화 목록</h2>
+          {isLoadingConversationIds ? (
+            <div>대화 목록 불러오는 중...</div>
+          ) : !conversationIds || conversationIds.list.length === 0 ? (
+            <div>대화 목록이 없습니다.</div>
           ) : (
-            messages.map((msg, index) => (
-              <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
-                <div
-                  className={`max-w-[70%] p-3 rounded-2xl ${
-                    msg.role === 'user'
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-white text-purple-700 border border-purple-200'
-                  }`}
-                >
-                  {renderMessageContent(msg.content)}
-                </div>
-              </div>
-            ))
+            <ul className="space-y-2">
+              {conversationIds.list.map((id: number) => (
+                <li key={id}>
+                  <button
+                    onClick={() => handleSelectConversation(id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg focus:outline-none focus:ring-2 transition duration-150 ease-in-out ${
+                      conversationId === id
+                        ? 'bg-purple-700 text-white'
+                        : 'bg-purple-500 text-white hover:bg-purple-600'
+                    }`}
+                  >
+                    대화 {id}
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
+        <div className="p-4 border-t border-gray-300">
+          <button
+            onClick={handleStartNewConversation}
+            className="w-full px-3 py-2 bg-purple-500 text-white rounded-lg focus:outline-none focus:ring-2 hover:bg-purple-600 transition duration-150 flex items-center justify-center"
+          >
+            <Plus size={20} className="mr-2" />
+            새로운 대화
+          </button>
+        </div>
+      </div>
 
-        {/* 버튼과 입력창이 같은 라인에 위치 */}
+      <div className="flex-1 flex flex-col">
+        <div className="flex-grow overflow-y-auto p-4">
+          <div className="max-w-3xl mx-auto">
+            {isLoadingConversationDetails && conversationId !== null ? (
+              <div>대화 내용 불러오는 중...</div>
+            ) : (
+              messages.map((msg, index) => (
+                <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
+                  <div
+                    className={`max-w-[70%] p-3 rounded-2xl ${
+                      msg.role === 'user'
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-white text-purple-700 border border-purple-200'
+                    }`}
+                  >
+                    {renderMessageContent(msg.content)}
+                  </div>
+                </div>
+              ))
+            )}
+            {/* 스크롤을 관리하는 참조 요소 */}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
         <div className="bg-white p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-2 mb-4">
+          <div className="flex flex-wrap justify-center gap-2 mb-4">
             <button
               onClick={() =>
                 handleCustomMessage(
@@ -251,7 +277,8 @@ const ChatInterface: React.FC = () => {
             >
               항공편 상태
             </button>
-            {/* 메시지 입력 및 전송 */}
+          </div>
+          <div className="flex items-center space-x-2">
             <input
               type="text"
               value={userInput}

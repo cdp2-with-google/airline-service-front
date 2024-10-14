@@ -1,4 +1,3 @@
-// C:\HYUNWOO\react\airline-service\airline-service-front\src\api\conversations.ts
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import apiClient, { axiosError } from './_client';
 import {
@@ -6,7 +5,7 @@ import {
   ConversationDetailsResponse,
   PostConversationRequest,
   PostConversationResponse,
-} from '../types/api'; // 타입 정의 가져오기
+} from '../types/api';
 
 // POST /conversations - useMutation을 사용하지 않고 직접 호출
 export const postConversation = async (data: PostConversationRequest) => {
@@ -44,7 +43,6 @@ export const usePostConversation = () => {
   return { handlePostConversation };
 };
 
-// 추가된 영역 시작
 // GET /conversations/id-list - 대화 ID 목록 가져오기
 export const useConversationIdList = () => {
   return useQuery({
@@ -80,5 +78,3 @@ export const useConversationDetails = (conversation_id: number) => {
     enabled: !!conversation_id, // conversation_id가 있을 때만 요청
   });
 };
-
-// 추가된 영역 끝
