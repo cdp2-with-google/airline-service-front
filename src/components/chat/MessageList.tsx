@@ -1,17 +1,20 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
+// 메시지 데이터 타입 정의
 type Message = {
   role: 'user' | 'assistant';
   content: React.ReactNode;
 };
 
+// 메시지 목록 컴포넌트
 type MessageListProps = {
   messages: Message[];
   isLoading: boolean;
 };
 
 const MessageList: React.FC<MessageListProps> = ({ messages, isLoading }) => {
+  // 로딩 상태 처리
   if (isLoading) {
     return <div>대화 내용을 불러오는 중입니다...</div>;
   }

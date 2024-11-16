@@ -12,7 +12,7 @@ type CustomButtonsProps = {
 
 const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage }) => {
   return (
-    <div className="flex flex-wrap justify-center gap-2 mb-4">
+    <div className="flex flex-wrap justify-center gap-2 mb-1">
       <button
         onClick={() =>
           onCustomMessage(
