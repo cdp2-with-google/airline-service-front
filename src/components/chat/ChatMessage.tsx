@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
-type MessageBubbleProps = {
+type ChatMessageProps = {
   role: 'user' | 'assistant';
   content: string | React.ReactNode;
 };
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ role, content }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ role, content }) => {
   return (
     <div className={`flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
       <div
@@ -20,4 +20,4 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ role, content }) => {
   );
 };
 
-export default MessageBubble;
+export default ChatMessage;
