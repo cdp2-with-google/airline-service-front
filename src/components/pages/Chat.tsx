@@ -1,5 +1,5 @@
 import React from 'react';
-import ChatInterface from '../chat/chat-interface';
+import ChatInterface from '../chat/Chat-interface';
 
 const Chat: React.FC = () => {
   return <ChatInterface />;
