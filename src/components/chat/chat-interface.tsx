@@ -160,7 +160,7 @@ const ChatInterface: React.FC = () => {
         />
 
         {/* 입력 부분 */}
-        <div className="bg-gray-100 p-4 border-gray-300 sticky bottom-0 flex justify-center">
+        <div className="bg-gray-100 p-1 border-gray-300 sticky bottom-4 flex justify-center">
           <div className="flex items-center space-x-2 w-2/3">
             <input
               type="text"

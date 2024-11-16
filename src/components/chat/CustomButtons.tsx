@@ -1,4 +1,4 @@
-// 추후 백엔드 개발 상황에 따라 적절히 활용 예정
+//todo: 추후 백엔드 개발 상황에 따라 적절히 활용 예정
 import React from 'react';
 import { BoardingPass } from './custom-ui/Boardingpass';
 import { Destinations } from './custom-ui/Destinations';
@@ -12,7 +12,7 @@ type CustomButtonsProps = {
 
 const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage }) => {
   return (
-    <div className="flex flex-wrap justify-center gap-2 mb-1">
+    <div className="flex flex-wrap justify-center gap-2 p-6">
       <button
         onClick={() =>
           onCustomMessage(
