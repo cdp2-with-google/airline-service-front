@@ -1,4 +1,4 @@
-//todo: 추후 백엔드 개발 상황에 따라 적절히 활용 예정
+//todo : 추후 백엔드 개발 상황에 따라 적절히 활용 예정
 import React from 'react';
 import { BoardingPass } from './custom-ui/Boardingpass';
 import { Destinations } from './custom-ui/Destinations';
