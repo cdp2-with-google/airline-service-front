@@ -9,9 +9,9 @@ import {
 
 export const postConversation = async (data: PostConversationRequest) => {
   try {
-    console.log('API 요청 시작:', data);
+    // console.log('API 요청 시작:', data);
     const response = await apiClient.post<PostConversationResponse>('/conversations', { data });
-    console.log('API 응답:', response.data);
+    // console.log('API 응답:', response.data);
     return response.data;
   } catch (error) {
     const errorMessage = axiosError(error);
@@ -52,11 +52,14 @@ export const useConversationIdList = () => {
     queryFn: async () => {
       try {
         const response = await apiClient.get<ConversationIdListResponse>('/conversations/id-list');
+        if (response.data.list.length === 0) {
+          // console.warn('대화 목록이 비어 있습니다.');
+        }
         return response.data;
       } catch (error) {
         const errorMessage = axiosError(error);
         if (errorMessage === 'Resource not found') {
-          console.warn('대화 목록이 비어 있습니다.');
+          console.log('대화 목록이 비어 있습니다.');
           return { list: [] };
         }
         throw error;
@@ -72,6 +75,11 @@ export const useConversationDetails = (conversation_id: number) => {
     queryKey: ['conversationDetails', conversation_id],
     queryFn: async () => {
       try {
+        if (conversation_id === -1) {
+          // console.warn('Conversation ID가 -1입니다. 대화 상세 정보 없음.');
+          return { pairing: [] };
+        }
+
         const response = await apiClient.get<ConversationDetailsResponse>(`/conversations/${conversation_id}`);
         return response.data;
       } catch (error) {

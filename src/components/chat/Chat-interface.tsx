@@ -36,9 +36,9 @@ const ChatInterface: React.FC = () => {
       if (conversationIds.list.length > 0) {
         const recentConversationId = Math.max(...conversationIds.list);
         setConversationId(recentConversationId);
-        console.log('자동으로 선택된 대화 ID:', recentConversationId);
+        // console.log('자동으로 선택된 대화 ID:', recentConversationId);
       } else {
-        console.log('대화 목록이 비어 있습니다.');
+        // console.log('대화 목록이 비어 있습니다.');
         setConversationId(null);
         setMessages([]);
       }
