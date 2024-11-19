@@ -77,7 +77,7 @@ export const useConversationDetails = (conversation_id: number) => {
       } catch (error) {
         const errorMessage = axiosError(error);
         if (errorMessage === 'Resource not found') {
-          console.warn(`대화 상세 내용이 없습니다. Conversation ID: ${conversation_id}`);
+          // console.warn(`대화 상세 내용이 없습니다. Conversation ID: ${conversation_id}`);
           return { pairing: [] };
         }
         throw error;

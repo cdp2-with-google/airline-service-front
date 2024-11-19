@@ -15,7 +15,7 @@ export const axiosError = (error: unknown) => {
 
     if (axiosErr.response) {
       if (axiosErr.response.status === 404) {
-        console.warn('Resource not found (404):', axiosErr.response.config.url);
+        // console.warn('Resource not found (404):', axiosErr.response.config.url);
         return 'Resource not found';
       }
       console.error('Response error:', axiosErr.response.data);
