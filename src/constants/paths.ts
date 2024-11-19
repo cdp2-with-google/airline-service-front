@@ -4,4 +4,5 @@
 export const PATHS = {
   MAIN: '/',
   CHAT: '/chat',
+  CALENDAR: '/calendar',
 } as const;
