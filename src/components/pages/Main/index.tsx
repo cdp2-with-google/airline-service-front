@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import backgroundImage0 from '../../../assets/main_background_image0.jpg';
 import backgroundImage1 from '../../../assets/main_background_image1.jpg';
 import backgroundImage2 from '../../../assets/main_background_image2.jpg';
+import mainHomeIcon from '../../../assets/main_home_icon.svg';
+import mainAboutUsIcon from '../../../assets/main_about_us_icon.svg';
+import mainBookFlightIcon from '../../../assets/main_book_flight_icon.svg';
+import mainContactUsIcon from '../../../assets/main_contact_us_icon.svg';
 import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constants/paths';
 
@@ -41,38 +45,22 @@ const Main: React.FC = () => {
               <div className="flex gap-16 items-center">
                 <div className="menus flex flex-1 justify-center items-end gap-3 w-full">
                   <div className="menu flex flex-col items-center w-[fit-content]">
-                    <img
-                      className="image h-[28px] w-[40px]"
-                      alt="Image"
-                      src="https://c.animaapp.com/vxioQ0qt/img/image-4.svg"
-                    />
+                    <img className="image h-[28px] w-[40px]" alt="Image" src={mainHomeIcon} />
                     <div className="t text-white text-[20px]">Home</div>
                   </div>
                   <img className="line w-[1px]" alt="Line" src="https://c.animaapp.com/vxioQ0qt/img/line-9-1.svg" />
                   <div className="menu flex flex-col items-center w-[fit-content]">
-                    <img
-                      className="img h-[25px] w-[28px]"
-                      alt="Image"
-                      src="https://c.animaapp.com/vxioQ0qt/img/image-5.svg"
-                    />
+                    <img className="img h-[25px] w-[28px]" alt="Image" src={mainAboutUsIcon} />
                     <div className="t text-white text-[20px]">About Us</div>
                   </div>
                   <img className="line w-[1px]" alt="Line" src="https://c.animaapp.com/vxioQ0qt/img/line-9-1.svg" />
                   <div className="div flex flex-col items-center w-[fit-content]">
-                    <img
-                      className="image-2 h-[24px] w-[29px]"
-                      alt="Image"
-                      src="https://c.animaapp.com/vxioQ0qt/img/image-6.svg"
-                    />
+                    <img className="image-2 h-[24px] w-[29px]" alt="Image" src={mainBookFlightIcon} />
                     <div className="t-menu text-white text-[20px]">Book Flight</div>
                   </div>
                   <img className="line w-[1px]" alt="Line" src="https://c.animaapp.com/vxioQ0qt/img/line-9-1.svg" />
                   <div className="div flex flex-col items-center w-[fit-content]">
-                    <img
-                      className="image-3 h-[28px] w-[24px]"
-                      alt="Image"
-                      src="https://c.animaapp.com/vxioQ0qt/img/image-7.svg"
-                    />
+                    <img className="image-3 h-[28px] w-[24px]" alt="Image" src={mainContactUsIcon} />
                     <div className="text-wrapper text-white text-[20px]">Contact Us</div>
                   </div>
                 </div>
