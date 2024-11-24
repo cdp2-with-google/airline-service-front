@@ -2,6 +2,10 @@
 
 > 해당 코드 베이스는 특정 규칙을 따릅니다. 참고하여 개발하시길 바랍니다.
 
+## 배포 사이트
+
+- https://service-client-965998489425.asia-northeast1.run.app/
+
 ## Component
 
 - 공통 컴포넌트 만들 경우
@@ -18,7 +22,17 @@
 
 ## Styling (tailwind.css)
 
-- 전체적인 color셋은 `src/theme/theme.ts`에 존재 (TOBE)
+- 기본 color set: `gray`
+  - button (filled)
+    - background color: `bg-gray-800`
+    - hover color: `hover:bg-gray-600`
+    - text color: `text-white`
+  - button (outline)
+    - background color: `bg-transparent`
+    - border color: `border border-gray-200`
+    - text color: `text-gray-700`
+  - 일반 텍스트
+    - text color: `text-gray-500`, `text-gray-600`, `text-gray-700`
 
 ## API (axios & react-query)
 
