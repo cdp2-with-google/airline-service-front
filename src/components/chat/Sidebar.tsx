@@ -31,8 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => onSelectConversation(id)}
                   className={`w-full text-left px-3 py-2 rounded-lg focus:outline-none ${
                     selectedConversationId === id
-                      ? 'bg-purple-700 text-white'
-                      : 'bg-purple-500 text-white hover:bg-purple-600'
+                      ? 'bg-gray-700 text-white'
+                      : 'bg-gray-800 text-white hover:bg-gray-600'
                   }`}
                 >
                   대화 {id + 1}
@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-4 border-t border-gray-300">
         <button
           onClick={onNewConversation}
-          className="w-full px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+          className="w-full px-3 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-600"
         >
           + 새로운 대화
         </button>

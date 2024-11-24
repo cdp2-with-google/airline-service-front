@@ -30,23 +30,23 @@ export const BoardingPass: React.FC<BoardingPassProps> = ({
   },
 }) => {
   return (
-    <div className="grid gap-4 p-4 sm:p-6 border border-purple-200 rounded-2xl bg-white">
+    <div className="grid gap-4 p-4 sm:p-6 border border-gray-200 rounded-2xl bg-white">
       <div className="flex gap-4 items-start">
-        <div className="w-10 sm:w-12 shrink-0 aspect-square rounded-lg bg-purple-50 overflow-hidden">
+        <div className="w-10 sm:w-12 shrink-0 aspect-square rounded-lg bg-gray-50 overflow-hidden">
           <img src={airlineLogo} className="object-cover aspect-square" alt="airline logo" />
         </div>
         <div>
           <div className="font-medium text-lg">{summary.airline}</div>
-          <div className="text-sm text-purple-600">
+          <div className="text-sm text-gray-600">
             {summary.departure} - {summary.arrival}
           </div>
         </div>
         <div className="ml-auto text-center">
-          <div className="text-xs text-purple-600 uppercase">게이트</div>
+          <div className="text-xs text-gray-600 uppercase">게이트</div>
           <div className="text-2xl font-mono">{summary.gate}</div>
         </div>
       </div>
-      <div className="grid gap-1 p-4 rounded-xl bg-purple-50">
+      <div className="grid gap-1 p-4 rounded-xl bg-gray-50">
         <div className="font-medium text-lg">승객 이름</div>
         <div className="flex text-sm justify-between">
           <div>{summary.departure}</div>
@@ -55,20 +55,20 @@ export const BoardingPass: React.FC<BoardingPassProps> = ({
         </div>
       </div>
       <div className="flex flex-col gap-2 md:flex-row">
-        <div className="px-4 py-3 rounded-xl bg-purple-50 grid gap-1">
-          <div className="text-xs text-purple-600 uppercase">좌석</div>
+        <div className="px-4 py-3 rounded-xl bg-gray-50 grid gap-1">
+          <div className="text-xs text-gray-600 uppercase">좌석</div>
           <div className="text-2xl font-mono leading-none">{summary.seat}</div>
         </div>
-        <div className="px-4 py-3 rounded-xl bg-purple-50 flex-1 grid gap-1">
-          <div className="text-xs text-purple-600 uppercase">클래스</div>
+        <div className="px-4 py-3 rounded-xl bg-gray-50 flex-1 grid gap-1">
+          <div className="text-xs text-gray-600 uppercase">클래스</div>
           <div className="text-xl leading-none">이코노미</div>
         </div>
-        <div className="px-4 py-3 rounded-xl bg-purple-50 grid gap-1">
-          <div className="text-xs text-purple-600 uppercase">출발</div>
+        <div className="px-4 py-3 rounded-xl bg-gray-50 grid gap-1">
+          <div className="text-xs text-gray-600 uppercase">출발</div>
           <div className="text-xl leading-none">{summary.departureTime}</div>
         </div>
-        <div className="px-4 py-3 rounded-xl bg-purple-50 grid gap-1">
-          <div className="text-xs text-purple-600 uppercase">도착</div>
+        <div className="px-4 py-3 rounded-xl bg-gray-50 grid gap-1">
+          <div className="text-xs text-gray-600 uppercase">도착</div>
           <div className="text-xl leading-none">{summary.arrivalTime}</div>
         </div>
       </div>

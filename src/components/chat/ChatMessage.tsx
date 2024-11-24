@@ -11,7 +11,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ role, content }) => {
     <div className={`flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
       <div
         className={`max-w-[70%] p-3 rounded-2xl ${
-          role === 'user' ? 'bg-purple-500 text-white' : 'bg-white text-purple-700 border border-purple-200'
+          role === 'user' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 border border-gray-200'
         }`}
       >
         {typeof content === 'string' ? <ReactMarkdown>{content}</ReactMarkdown> : content}

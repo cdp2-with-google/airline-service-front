@@ -26,7 +26,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, isLoading }) => {
           <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
             <div
               className={`max-w-[70%] p-3 rounded-2xl ${
-                msg.role === 'user' ? 'bg-purple-500 text-white' : 'bg-white text-purple-700 border border-purple-200'
+                msg.role === 'user' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 border border-gray-200'
               }`}
             >
               {typeof msg.content === 'string' ? <ReactMarkdown>{msg.content}</ReactMarkdown> : msg.content}

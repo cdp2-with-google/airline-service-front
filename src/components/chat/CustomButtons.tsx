@@ -31,13 +31,13 @@ const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage }) => {
             />
           )
         }
-        className="px-4 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600"
+        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
       >
         탑승권
       </button>
       <button
         onClick={() => onCustomMessage(<Destinations destinations={['Paris', 'Tokyo', 'New York']} />)}
-        className="px-4 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600"
+        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
       >
         목적지
       </button>
@@ -55,7 +55,7 @@ const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage }) => {
             />
           )
         }
-        className="px-4 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600"
+        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
       >
         항공편
       </button>
@@ -73,7 +73,7 @@ const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage }) => {
             />
           )
         }
-        className="px-4 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600"
+        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
       >
         티켓 구매
       </button>
@@ -96,7 +96,7 @@ const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage }) => {
             />
           )
         }
-        className="px-4 py-2 bg-purple-500 text-white rounded-full hover:bg-purple-600"
+        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
       >
         항공편 상태
       </button>

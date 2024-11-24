@@ -88,7 +88,7 @@ export default function Calendar() {
           onChange={handleChange}
           className="border p-2 rounded"
         ></textarea>
-        <button onClick={handleSubmit} className="bg-purple-500 text-white py-2 rounded hover:bg-purple-600">
+        <button onClick={handleSubmit} className="bg-gray-800 text-white py-2 rounded hover:bg-gray-600">
           일정 추가하기
         </button>
       </div>

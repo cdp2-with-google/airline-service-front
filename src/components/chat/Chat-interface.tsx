@@ -173,11 +173,11 @@ const ChatInterface: React.FC = () => {
                 }
               }}
               placeholder="메시지를 입력하세요."
-              className="flex-1 p-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="flex-1 p-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500"
             />
             <button
               onClick={handleSendMessage}
-              className="p-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors duration-200"
+              className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition-colors duration-200"
             >
               <Send size={20} />
             </button>
