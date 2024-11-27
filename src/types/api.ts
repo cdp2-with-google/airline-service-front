@@ -32,3 +32,9 @@ export type PostConversationResponse = {
     answer: string;
   };
 };
+
+// Google OAuth 응답 타입
+export type PostGoogleOAuthResponse = {
+  accessToken: string;
+  refreshToken: string;
+};

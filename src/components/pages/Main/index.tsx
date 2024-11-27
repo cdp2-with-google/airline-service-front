@@ -8,6 +8,7 @@ import mainBookFlightIcon from '../../../assets/main_book_flight_icon.svg';
 import mainContactUsIcon from '../../../assets/main_contact_us_icon.svg';
 import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constants/paths';
+import { postGoogleOAuth } from '../../../api/auth';
 
 const BACKGROUND_IMAGES = [backgroundImage0, backgroundImage1, backgroundImage2];
 
@@ -18,6 +19,16 @@ const Main: React.FC = () => {
 
   const handleStartChat = () => {
     navigate(PATHS.CHAT);
+  };
+
+  const handleSignIn = async () => {
+    try {
+      const { data } = await postGoogleOAuth();
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -64,7 +75,7 @@ const Main: React.FC = () => {
                     <div className="text-wrapper text-white text-[20px]">Contact Us</div>
                   </div>
                 </div>
-                <button className="buttons flex gap-4">
+                <button className="buttons flex gap-4" onClick={handleSignIn}>
                   <div className="text-wrapper-2 text-white text-[20px] font-semibold">Sign In</div>
                 </button>
               </div>
