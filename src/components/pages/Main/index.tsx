@@ -26,6 +26,7 @@ const Main: React.FC = () => {
       const { data } = await postGoogleOAuth();
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
+      navigate(PATHS.CHAT);
     } catch (error) {
       console.error(error);
     }
