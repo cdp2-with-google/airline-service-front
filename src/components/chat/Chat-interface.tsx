@@ -16,43 +16,35 @@ const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationId, setConversationId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [selectedAirline, setSelectedAirline] = useState<string>('대한항공');
 
-  // API 연결 : 대화 ID 목록 가져오기
   const { data: conversationIds, isLoading: isLoadingConversationIds } = useConversationIdList();
-
-  // API 연결 : 대화 상세 내용 가져오기
   const {
     data: conversationDetails,
     isLoading: isLoadingConversationDetails,
     refetch,
   } = useConversationDetails(conversationId ?? -1);
 
-  // API 연결 : 대화 메시지 전송
   const { handlePostConversation } = usePostConversation();
 
-  // 가장 최근 대화(id값이 가장 큰 대화)를 자동으로 선택하도록 설정
   useEffect(() => {
     if (conversationIds) {
       if (conversationIds.list.length > 0) {
         const recentConversationId = Math.max(...conversationIds.list);
         setConversationId(recentConversationId);
-        // console.log('자동으로 선택된 대화 ID:', recentConversationId);
       } else {
-        // console.log('대화 목록이 비어 있습니다.');
         setConversationId(null);
         setMessages([]);
       }
     }
   }, [conversationIds]);
 
-  // 선택된 대화 ID가 변경될 때 대화 내용을 다시 불러오기
   useEffect(() => {
     if (conversationId !== null) {
       refetch();
     }
   }, [conversationId, refetch]);
 
-  // 대화 내용을 상태로 저장
   useEffect(() => {
     if (conversationDetails) {
       const existingMessages: Message[] = conversationDetails.pairing
@@ -65,10 +57,8 @@ const ChatInterface: React.FC = () => {
     }
   }, [conversationDetails]);
 
-  // 메시지 보내기 : 메세지를 보내자마자 input박스를 비워주기 위해 입력값을 임시저장
   const handleSendMessage = async () => {
     if (userInput.trim()) {
-      // 사용자 메시지 추가
       const newUserMessage: Message = { role: 'user', content: userInput };
       const placeholderAssistantMessage: Message = {
         role: 'assistant',
@@ -93,7 +83,6 @@ const ChatInterface: React.FC = () => {
               setConversationId(response.data.conversation_id);
             }
 
-            // LoadingMessage를 실제 응답으로 업데이트
             const assistantMessage: Message = {
               role: 'assistant',
               content: response.data.answer || '응답이 없습니다.',
@@ -113,7 +102,6 @@ const ChatInterface: React.FC = () => {
     }
   };
 
-  // 대화 목록 하단에 스크롤 고정
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -126,7 +114,7 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* 사이드바 부분 */}
+      {/* 사이드바 */}
       <Sidebar
         conversationIds={conversationIds ? conversationIds.list : []}
         selectedConversationId={conversationId}
@@ -155,13 +143,29 @@ const ChatInterface: React.FC = () => {
         </div>
 
         {/* 커스텀 버튼 */}
-        <CustomButtons
-          onCustomMessage={(component) => setMessages([...messages, { role: 'assistant', content: component }])}
-        />
+        <div className="flex justify-center mb-0">
+          <CustomButtons
+            onCustomMessage={(component) => setMessages([...messages, { role: 'assistant', content: component }])}
+          />
+        </div>
 
         {/* 입력 부분 */}
-        <div className="bg-gray-100 p-1 border-gray-300 sticky bottom-4 flex justify-center">
-          <div className="flex items-center space-x-2 w-2/3">
+        <div className="bg-gray-100 p-2 flex justify-center items-center" style={{ gap: '8px', marginBottom: '20px' }}>
+          {/* 드롭다운 */}
+          <select
+            value={selectedAirline}
+            onChange={(e) => setSelectedAirline(e.target.value)}
+            className="p-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            {['대한항공', '아시아나', '루프트한자', '에어캐나다', '에미레이트항공'].map((airline) => (
+              <option key={airline} value={airline}>
+                {airline}
+              </option>
+            ))}
+          </select>
+
+          {/* 메시지 입력 */}
+          <div className="flex items-center w-2/3">
             <input
               type="text"
               value={userInput}
@@ -177,7 +181,7 @@ const ChatInterface: React.FC = () => {
             />
             <button
               onClick={handleSendMessage}
-              className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition-colors duration-200"
+              className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition-colors duration-200 ml-2"
             >
               <Send size={20} />
             </button>
