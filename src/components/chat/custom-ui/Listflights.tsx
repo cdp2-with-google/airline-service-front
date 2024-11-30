@@ -1,4 +1,3 @@
-// Listflights.tsx
 import React from 'react';
 import airlineLogo from '../../../assets/koreanair.png';
 
@@ -48,14 +47,14 @@ export const ListFlights: React.FC<ListFlightsProps> = ({ flights, summary }) =>
         {flights.map((flight) => (
           <div
             key={flight.id}
-            className="flex cursor-pointer flex-row items-start sm:items-center gap-4 rounded-xl p-2 hover:bg-gray-50"
+            className="flex  flex-row items-start sm:items-center gap-4 rounded-xl p-2 hover:bg-gray-50"
           >
-            {/* Airline Logo */}
+            {/* 항공사 로고(대한항공) */}
             <div className="w-10 sm:w-12 shrink-0 aspect-square rounded-lg bg-gray-50 overflow-hidden">
               <img src={airlineLogo} className="object-cover aspect-square" alt="airline logo" />
             </div>
 
-            {/* Flight Details */}
+            {/* 비행편 세부 정보 */}
             <div className="grid gap-4 sm:grid-cols-4 items-start sm:gap-6 flex-1">
               <div className="col-span-2">
                 <div className="font-medium">
@@ -70,7 +69,9 @@ export const ListFlights: React.FC<ListFlightsProps> = ({ flights, summary }) =>
                 </div>
               </div>
               <div>
-                <div className="sm:text-right font-medium font-mono">₩{flight.price.toLocaleString()}</div>
+                <div className="sm:text-right font-medium font-mono">
+                  {Number(flight.price).toLocaleString('ko-KR')}원
+                </div>
                 <div className="sm:text-right text-xs text-gray-600">편도</div>
               </div>
             </div>
