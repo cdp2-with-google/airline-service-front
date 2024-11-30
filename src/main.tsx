@@ -5,7 +5,6 @@ import { PATHS } from './constants/paths.ts';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Main from './components/pages/Main';
 import Chat from './components/pages/Chat.tsx';
-import Calendar from './components/pages/Calendar.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
 
@@ -26,10 +25,6 @@ const router = createBrowserRouter([
       {
         path: PATHS.CHAT,
         element: <Chat />,
-      },
-      {
-        path: PATHS.CALENDAR,
-        element: <Calendar />,
       },
     ],
   },

@@ -62,7 +62,7 @@ export const PurchaseTickets: React.FC<PurchaseProps> = ({
       )}
       {currentStatus === 'requires_code' && (
         <>
-          <div className="text-gray-700">구매를 완료하려면 휴대폰 (***) *** 6137로 전송된 코드를 입력하세요.</div>
+          <div className="text-gray-700">구매를 완료하려면 휴대폰 (***) *** 1111로 전송된 코드를 입력하세요.</div>
           <div className="flex justify-center p-2 text-center border rounded-full text-gray-700">
             <input
               className="w-32 text-center bg-transparent outline-none"

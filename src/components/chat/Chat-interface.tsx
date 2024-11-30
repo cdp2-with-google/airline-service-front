@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './Sidebar';
 import MessageList from './MessageList';
-import CustomButtons from './CustomButtons';
 import LoadingMessage from './LoadingMessage';
 import { Send } from 'lucide-react';
 import { usePostConversation, useConversationIdList, useConversationDetails } from '../../api/conversations';
+import ListFlights from './custom-ui/Listflights';
+import { FlightInfoData } from '../../types/api';
+import { BoardingPass } from './custom-ui/Boardingpass';
+import CustomButtons from './CustomButtons';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -47,15 +50,73 @@ const ChatInterface: React.FC = () => {
 
   useEffect(() => {
     if (conversationDetails) {
-      const existingMessages: Message[] = conversationDetails.pairing
-        .map((pair) => [
-          { role: 'user', content: pair.request_message } as Message,
-          { role: 'assistant', content: pair.response_message } as Message,
-        ])
-        .flat();
+      console.log('가져온 상세 대화 데이터:', conversationDetails);
+      const existingMessages: Message[] = conversationDetails.pairing.flatMap((pair) => {
+        console.log('개별 페어 데이터:', pair);
+        const userMessage: Message = { role: 'user', content: pair.request_message };
+
+        const assistantMessage: Message = {
+          role: 'assistant',
+          content:
+            pair.response_type === 'get_flight_info' && pair.data
+              ? renderFlightInfo(pair.data as FlightInfoData)
+              : pair.response_type === 'book_flight' && pair.data
+                ? renderBoardingPass(pair.data)
+                : logPlainTextResponse(pair.response_message),
+        };
+
+        return [userMessage, assistantMessage];
+      });
+
       setMessages(existingMessages);
     }
   }, [conversationDetails]);
+
+  const renderFlightInfo = (data: FlightInfoData) => {
+    const transformedFlights = data.list.map((flight, index) => ({
+      id: index + 1,
+      airlines: selectedAirline,
+      departureTime: flight.departure_time,
+      arrivalTime: flight.arrival_time,
+      price: flight.price,
+    }));
+
+    return (
+      <ListFlights
+        flights={transformedFlights}
+        summary={{
+          arrivalCity: data.destination,
+          departingCity: data.departure,
+          arrivalAirport: data.destination_code,
+          departingAirport: data.departure_code,
+          date: data.date,
+        }}
+      />
+    );
+  };
+
+  const renderBoardingPass = (data: any) => {
+    return (
+      <BoardingPass
+        summary={{
+          airline: data.airline,
+          arrival: data.destination_code,
+          departure: data.departure_code,
+          departureTime: data.departure_time,
+          arrivalTime: data.arrival_time,
+          seat: data.seat,
+          date: data.date,
+          gate: data.gate,
+          name: data.name,
+          class: data.class,
+        }}
+      />
+    );
+  };
+
+  const logPlainTextResponse = (responseMessage: string) => {
+    return responseMessage;
+  };
 
   const handleSendMessage = async () => {
     if (userInput.trim()) {
@@ -78,20 +139,17 @@ const ChatInterface: React.FC = () => {
         });
 
         if (response) {
-          if ('data' in response) {
-            if (conversationId === null) {
-              setConversationId(response.data.conversation_id);
-            }
+          const assistantMessage: Message = {
+            role: 'assistant',
+            content:
+              response.response_type === 'get_flight_info' && response.data
+                ? renderFlightInfo(response.data as FlightInfoData)
+                : response.response_type === 'book_flight' && response.data
+                  ? renderBoardingPass(response.data)
+                  : logPlainTextResponse(response.answer || '응답이 없습니다.'),
+          };
 
-            const assistantMessage: Message = {
-              role: 'assistant',
-              content: response.data.answer || '응답이 없습니다.',
-            };
-
-            setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
-          } else {
-            console.warn('Invalid response format');
-          }
+          setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
         }
       } catch (error) {
         console.error('API 요청 중 오류 발생:', error);
@@ -114,7 +172,6 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* 사이드바 */}
       <Sidebar
         conversationIds={conversationIds ? conversationIds.list : []}
         selectedConversationId={conversationId}
@@ -125,10 +182,7 @@ const ChatInterface: React.FC = () => {
         }}
         isLoading={isLoadingConversationIds}
       />
-
-      {/* 메인 채팅 영역 */}
       <div className="flex-1 flex flex-col">
-        {/* 메시지 목록 */}
         <div className="flex-grow overflow-y-auto p-4">
           {isLoadingConversationDetails && conversationId !== null ? (
             <div className="flex items-center justify-center h-full">
@@ -141,21 +195,16 @@ const ChatInterface: React.FC = () => {
           )}
           <div ref={messagesEndRef} />
         </div>
-
-        {/* 커스텀 버튼 */}
         <div className="flex justify-center mb-0">
           <CustomButtons
             onCustomMessage={(component) => setMessages([...messages, { role: 'assistant', content: component }])}
           />
         </div>
-
-        {/* 입력 부분 */}
         <div className="bg-gray-100 p-2 flex justify-center items-center" style={{ gap: '8px', marginBottom: '20px' }}>
-          {/* 드롭다운 */}
           <select
             value={selectedAirline}
             onChange={(e) => setSelectedAirline(e.target.value)}
-            className="p-2 border border-gray-300 rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className="p-2 h-10 border border-gray-300 rounded-full text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-500"
           >
             {['대한항공', '아시아나', '루프트한자', '에어캐나다', '에미레이트항공'].map((airline) => (
               <option key={airline} value={airline}>
@@ -163,8 +212,6 @@ const ChatInterface: React.FC = () => {
               </option>
             ))}
           </select>
-
-          {/* 메시지 입력 */}
           <div className="flex items-center w-2/3">
             <input
               type="text"
@@ -177,11 +224,11 @@ const ChatInterface: React.FC = () => {
                 }
               }}
               placeholder="메시지를 입력하세요."
-              className="flex-1 p-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="flex-1 p-2 h-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500"
             />
             <button
               onClick={handleSendMessage}
-              className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition-colors duration-200 ml-2"
+              className="p-2 h-10 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition-colors duration-200 ml-2"
             >
               <Send size={20} />
             </button>
