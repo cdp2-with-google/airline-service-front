@@ -24,14 +24,36 @@ export type PostConversationRequest = {
   question: string;
 };
 
-// 새로운 대화를 생성하거나 기존 대화에 질문을 추가한 응답 타입
-export type PostConversationResponse = {
-  data: {
-    conversation_id: number;
-    title: string;
-    answer: string;
-  };
-};
+export interface PostConversationResponse {
+  response_type: 'plain_text' | 'get_flight_info'; // 응답 종류
+  conversation_id: number; // 대화 식별 ID
+  title: string; // 대화 제목
+  answer: string; // 응답 메시지
+  data: PlainTextData | FlightInfoData | null; // 응답에 따라 데이터 구조 변경
+}
+
+// Plain Text 응답 타입
+interface PlainTextData {
+  additionalInfo?: string; // Plain text에 추가 정보가 필요할 경우
+}
+
+// Flight Info 응답 타입
+export interface FlightInfoData {
+  date: string;
+  departure: string;
+  destination: string;
+  departure_code: string;
+  destination_code: string;
+  list: FlightDetail[];
+}
+
+// 항공편 세부 정보
+export interface FlightDetail {
+  price: number;
+  flight_time: string;
+  departure_time: string;
+  arrival_time: string;
+}
 
 // Google OAuth 응답 타입
 export type PostGoogleOAuthResponse = {

@@ -5,6 +5,8 @@ import CustomButtons from './CustomButtons';
 import LoadingMessage from './LoadingMessage';
 import { Send } from 'lucide-react';
 import { usePostConversation, useConversationIdList, useConversationDetails } from '../../api/conversations';
+import ListFlights from './custom-ui/Listflights';
+import { FlightInfoData } from '../../types/api'; // FlightInfoData 가져오기
 
 type Message = {
   role: 'user' | 'assistant';
@@ -78,20 +80,42 @@ const ChatInterface: React.FC = () => {
         });
 
         if (response) {
-          if ('data' in response) {
-            if (conversationId === null) {
-              setConversationId(response.data.conversation_id);
-            }
+          const assistantMessage: Message = {
+            role: 'assistant',
+            content: (() => {
+              if (response.response_type === 'plain_text') {
+                return response.answer || '응답이 없습니다.';
+              } else if (response.response_type === 'get_flight_info' && response.data) {
+                const flightData = response.data as FlightInfoData;
 
-            const assistantMessage: Message = {
-              role: 'assistant',
-              content: response.data.answer || '응답이 없습니다.',
-            };
+                // Flight 데이터를 변환하여 ListFlights에 전달
+                const transformedFlights = flightData.list.map((flight, index) => ({
+                  id: index + 1,
+                  airlines: '대한항공', // 모든 항공사를 대한항공으로 설정
+                  departureTime: flight.departure_time,
+                  arrivalTime: flight.arrival_time,
+                  price: flight.price,
+                }));
 
-            setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
-          } else {
-            console.warn('Invalid response format');
-          }
+                return (
+                  <ListFlights
+                    flights={transformedFlights}
+                    summary={{
+                      arrivalCity: flightData.destination,
+                      departingCity: flightData.departure,
+                      arrivalAirport: flightData.destination_code,
+                      departingAirport: flightData.departure_code,
+                      date: flightData.date,
+                    }}
+                  />
+                );
+              } else {
+                return '지원하지 않는 응답 타입입니다.';
+              }
+            })(),
+          };
+
+          setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
         }
       } catch (error) {
         console.error('API 요청 중 오류 발생:', error);
@@ -114,7 +138,6 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* 사이드바 */}
       <Sidebar
         conversationIds={conversationIds ? conversationIds.list : []}
         selectedConversationId={conversationId}
@@ -125,10 +148,7 @@ const ChatInterface: React.FC = () => {
         }}
         isLoading={isLoadingConversationIds}
       />
-
-      {/* 메인 채팅 영역 */}
       <div className="flex-1 flex flex-col">
-        {/* 메시지 목록 */}
         <div className="flex-grow overflow-y-auto p-4">
           {isLoadingConversationDetails && conversationId !== null ? (
             <div className="flex items-center justify-center h-full">
@@ -141,17 +161,7 @@ const ChatInterface: React.FC = () => {
           )}
           <div ref={messagesEndRef} />
         </div>
-
-        {/* 커스텀 버튼 */}
-        <div className="flex justify-center mb-0">
-          <CustomButtons
-            onCustomMessage={(component) => setMessages([...messages, { role: 'assistant', content: component }])}
-          />
-        </div>
-
-        {/* 입력 부분 */}
         <div className="bg-gray-100 p-2 flex justify-center items-center" style={{ gap: '8px', marginBottom: '20px' }}>
-          {/* 드롭다운 */}
           <select
             value={selectedAirline}
             onChange={(e) => setSelectedAirline(e.target.value)}
@@ -163,8 +173,6 @@ const ChatInterface: React.FC = () => {
               </option>
             ))}
           </select>
-
-          {/* 메시지 입력 */}
           <div className="flex items-center w-2/3">
             <input
               type="text"

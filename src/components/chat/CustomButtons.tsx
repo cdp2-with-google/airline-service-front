@@ -1,4 +1,3 @@
-//todo: 추후 백엔드 개발 상황에 따라 적절히 활용 예정
 import React from 'react';
 import { BoardingPass } from './custom-ui/Boardingpass';
 import { Destinations } from './custom-ui/Destinations';
@@ -8,55 +7,45 @@ import { FlightStatus } from './custom-ui/Flightstatus';
 
 type CustomButtonsProps = {
   onCustomMessage: (component: React.ReactNode) => void;
+  fetchFlightInfo?: () => Promise<any>; // API 데이터를 가져오는 함수 추가
 };
 
-const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage }) => {
+const CustomButtons: React.FC<CustomButtonsProps> = ({ onCustomMessage, fetchFlightInfo }) => {
+  const handleFetchFlights = async () => {
+    if (!fetchFlightInfo) {
+      console.warn('fetchFlightInfo 함수가 정의되지 않았습니다.');
+      onCustomMessage(<div>항공편 정보를 가져올 수 없습니다.</div>);
+      return;
+    }
+
+    try {
+      const flightsData = await fetchFlightInfo();
+      onCustomMessage(
+        <ListFlights
+          flights={flightsData.list.map((flight: any) => ({
+            price: flight.price,
+            flight_time: flight.flight_time,
+            departure_time: flight.departure_time,
+            arrival_time: flight.arrival_time,
+          }))}
+          summary={{
+            arrivalCity: flightsData.destination,
+            departingCity: flightsData.departure,
+            arrivalAirport: flightsData.destination_code,
+            departingAirport: flightsData.departure_code,
+            date: flightsData.date,
+          }}
+        />
+      );
+    } catch (error) {
+      console.error('Failed to fetch flight data:', error);
+      onCustomMessage(<div>항공편 정보를 불러오지 못했습니다.</div>);
+    }
+  };
+
   return (
     <div className="flex flex-wrap justify-center gap-2 p-1">
-      <button
-        onClick={() =>
-          onCustomMessage(
-            <BoardingPass
-              summary={{
-                airline: 'American Airlines',
-                arrival: 'SFO',
-                departure: 'NYC',
-                departureTime: '10:00 AM',
-                arrivalTime: '12:00 PM',
-                price: 100,
-                seat: '1A',
-                date: '2021-12-25',
-                gate: '31',
-              }}
-            />
-          )
-        }
-        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
-      >
-        탑승권
-      </button>
-      <button
-        onClick={() => onCustomMessage(<Destinations destinations={['Paris', 'Tokyo', 'New York']} />)}
-        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
-      >
-        목적지
-      </button>
-      <button
-        onClick={() =>
-          onCustomMessage(
-            <ListFlights
-              summary={{
-                arrivalCity: 'San Francisco',
-                departingCity: 'New York City',
-                arrivalAirport: 'SFO',
-                departingAirport: 'JFK',
-                date: '2021-12-25',
-              }}
-            />
-          )
-        }
-        className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600"
-      >
+      <button onClick={handleFetchFlights} className="px-4 py-2 bg-gray-800 text-white rounded-full hover:bg-gray-600">
         항공편
       </button>
       <button
