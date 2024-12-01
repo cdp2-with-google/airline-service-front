@@ -9,6 +9,7 @@ import mainContactUsIcon from '../../../assets/main_contact_us_icon.svg';
 import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constants/paths';
 import { postGoogleOAuth } from '../../../api/auth';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const BACKGROUND_IMAGES = [backgroundImage0, backgroundImage1, backgroundImage2];
 
@@ -21,16 +22,22 @@ const Main: React.FC = () => {
     navigate(PATHS.CHAT);
   };
 
-  const handleSignIn = async () => {
-    try {
-      const { data } = await postGoogleOAuth();
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      navigate(PATHS.CHAT);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const handleSignIn = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      console.log(tokenResponse);
+    },
+  });
+
+  // const handleSignIn = async () => {
+  //   try {
+  //     const { data } = await postGoogleOAuth();
+  //     localStorage.setItem('accessToken', data.accessToken);
+  //     localStorage.setItem('refreshToken', data.refreshToken);
+  //     navigate(PATHS.CHAT);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -76,7 +83,7 @@ const Main: React.FC = () => {
                     <div className="text-wrapper text-white text-[20px]">Contact Us</div>
                   </div>
                 </div>
-                <button className="buttons flex gap-4" onClick={handleSignIn}>
+                <button className="buttons flex gap-4" onClick={() => handleSignIn()}>
                   <div className="text-wrapper-2 text-white text-[20px] font-semibold">Sign In</div>
                 </button>
               </div>
