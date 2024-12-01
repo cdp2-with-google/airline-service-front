@@ -17,6 +17,6 @@ export const logout = async () => {
   localStorage.removeItem('refreshToken');
 };
 
-export const isLoggedIn = () => {
+export const isSignin = () => {
   return !!localStorage.getItem('accessToken');
 };

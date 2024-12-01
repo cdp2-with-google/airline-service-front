@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constants/paths';
 import { postGoogleOAuth } from '../../../api/auth';
 import { useGoogleLogin } from '@react-oauth/google';
-import { setToken } from '../../../utils/token';
+import { isSignin, setToken } from '../../../utils/token';
 
 const BACKGROUND_IMAGES = [backgroundImage0, backgroundImage1, backgroundImage2];
 
@@ -18,10 +18,6 @@ const Main: React.FC = () => {
   const navigate = useNavigate();
 
   const [backgroundImageIndex, setBackgroundImageIndex] = useState(0);
-
-  const handleStartChat = () => {
-    navigate(PATHS.CHAT);
-  };
 
   const handleSignIn = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -79,9 +75,6 @@ const Main: React.FC = () => {
                     <div className="text-wrapper text-white text-[20px]">Contact Us</div>
                   </div>
                 </div>
-                <button className="buttons flex gap-4" onClick={() => handleSignIn()}>
-                  <div className="text-wrapper-2 text-white text-[20px] font-semibold">Sign In</div>
-                </button>
               </div>
             </div>
             <div className="body flex flex-col justify-between items-center w-full p-20">
@@ -93,7 +86,13 @@ const Main: React.FC = () => {
 
               <div className="space h-[calc(100vh-540px)]" />
               <button
-                onClick={handleStartChat}
+                onClick={() => {
+                  if (isSignin()) {
+                    navigate(PATHS.CHAT);
+                  } else {
+                    handleSignIn();
+                  }
+                }}
                 className="button border-2 border-white flex items-center justify-center p-4"
               >
                 <div className="t-get-started text-white text-[18px] font-semibold">Start Your Journey</div>
