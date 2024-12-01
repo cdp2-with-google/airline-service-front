@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../constants/api';
+import { getToken } from '../utils/token';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -7,6 +8,20 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+apiClient.interceptors.request.use(
+  (config) => {
+    const { accessToken, refreshToken } = getToken();
+    if (accessToken) {
+      config.headers.auth = accessToken;
+      config.headers.refresh = refreshToken;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Axios Error 처리
 export const axiosError = (error: unknown) => {

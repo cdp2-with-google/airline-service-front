@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constants/paths';
 import { postGoogleOAuth } from '../../../api/auth';
 import { useGoogleLogin } from '@react-oauth/google';
+import { setToken } from '../../../utils/token';
 
 const BACKGROUND_IMAGES = [backgroundImage0, backgroundImage1, backgroundImage2];
 
@@ -23,21 +24,16 @@ const Main: React.FC = () => {
   };
 
   const handleSignIn = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      console.log(tokenResponse);
+    onSuccess: async (tokenResponse) => {
+      try {
+        const { data } = await postGoogleOAuth(tokenResponse.access_token);
+        setToken(data);
+        navigate(PATHS.CHAT);
+      } catch (error) {
+        console.error(error);
+      }
     },
   });
-
-  // const handleSignIn = async () => {
-  //   try {
-  //     const { data } = await postGoogleOAuth();
-  //     localStorage.setItem('accessToken', data.accessToken);
-  //     localStorage.setItem('refreshToken', data.refreshToken);
-  //     navigate(PATHS.CHAT);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   useEffect(() => {
     const interval = setInterval(() => {
