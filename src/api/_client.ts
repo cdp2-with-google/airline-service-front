@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '../constants/api';
-import { getToken } from '../utils/token';
+import { getToken, logout } from '../utils/token';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -19,6 +19,23 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError): Promise<never> => {
+    if (error?.response?.status) {
+      if (error?.response?.status === 401) {
+        window.alert('로그인이 만료되었습니다.\n다시 로그인 해주세요.');
+        logout();
+      }
+
+      if (error?.response?.status >= 500) {
+        window.alert('알 수 없는 오류가 발생되었습니다.\n잠시 후 다시 이용바랍니다.');
+      }
+    }
+
     return Promise.reject(error);
   }
 );
