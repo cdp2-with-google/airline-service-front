@@ -11,22 +11,27 @@ import { PATHS } from '../../../constants/paths';
 import { postGoogleOAuth } from '../../../api/auth';
 import { useGoogleLogin } from '@react-oauth/google';
 import { isSignin, setToken } from '../../../utils/token';
+import { useLoading } from '../../../lib/useLoading';
 
 const BACKGROUND_IMAGES = [backgroundImage0, backgroundImage1, backgroundImage2];
 
 const Main: React.FC = () => {
   const navigate = useNavigate();
+  const { setIsLoading } = useLoading();
 
   const [backgroundImageIndex, setBackgroundImageIndex] = useState(0);
 
   const handleSignIn = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
+        setIsLoading(true);
         const { data } = await postGoogleOAuth(tokenResponse.access_token);
         setToken(data);
         navigate(PATHS.CHAT);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     },
   });
