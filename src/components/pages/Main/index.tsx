@@ -55,8 +55,9 @@ const Main: React.FC = () => {
         >
           <div className="groups flex flex-col items-center h-full w-full">
             <div className="head flex justify-between items-start gap-4 bg-gradient-to-b from-black to-transparent p-12 w-full">
-              <div className="t-company-name text-white text-[30px] font-bold whitespace-nowrap">
-                SkyWay Airline Services
+              <div className="t-company-name text-white text-[30px] font-bold whitespace-nowrap flex">
+                <img src="/AirlineAgent.svg" className="w-[30px] mr-[12px]" />
+                Air Agent
               </div>
               <div className="flex gap-16 items-center">
                 <div className="menus flex flex-1 justify-center items-end gap-3 w-full">
