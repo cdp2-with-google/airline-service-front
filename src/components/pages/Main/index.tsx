@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import backgroundImage0 from '../../../assets/main_background_image0.jpg';
 import backgroundImage1 from '../../../assets/main_background_image1.jpg';
 import backgroundImage2 from '../../../assets/main_background_image2.jpg';
@@ -35,6 +35,14 @@ const Main: React.FC = () => {
       }
     },
   });
+
+  // 이미지 미리 로드
+  useLayoutEffect(() => {
+    BACKGROUND_IMAGES.forEach((image) => {
+      const backgroundImage = new Image();
+      backgroundImage.src = image;
+    });
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
