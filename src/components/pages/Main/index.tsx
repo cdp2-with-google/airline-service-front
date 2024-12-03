@@ -48,7 +48,7 @@ const Main: React.FC = () => {
     <div className="hero h-[100vh] w-[100vw] relative">
       <div className="root bg-white h-full">
         <div
-          className="overlap-group bg-cover bg-center h-full w-full"
+          className="overlap-group bg-cover bg-center h-full w-full transition-backgroundImage ease-in-out delay-500 duration-500"
           style={{
             backgroundImage: `url(${BACKGROUND_IMAGES[backgroundImageIndex]})`,
           }}
