@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css';
 import { GOOGLE_CLIENT_ID } from './constants/oauth.ts';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import AuthWrapper from './AuthWrapper.tsx';
 
 const queryClient = new QueryClient();
 
@@ -25,8 +26,13 @@ const router = createBrowserRouter([
         element: <Main />,
       },
       {
-        path: PATHS.CHAT,
-        element: <Chat />,
+        element: <AuthWrapper />,
+        children: [
+          {
+            path: PATHS.CHAT,
+            element: <Chat />,
+          },
+        ],
       },
     ],
   },
