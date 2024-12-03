@@ -8,6 +8,7 @@ import ListFlights from './custom-ui/Listflights';
 import { FlightInfoData } from '../../types/api';
 import { BoardingPass } from './custom-ui/Boardingpass';
 import CustomButtons from './CustomButtons';
+import LogoutButton from '../common/LogoutButton';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -172,6 +173,8 @@ const ChatInterface: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
+      <LogoutButton />
+
       <Sidebar
         conversationIds={conversationIds ? conversationIds.list : []}
         selectedConversationId={conversationId}
