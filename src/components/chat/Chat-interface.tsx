@@ -7,7 +7,7 @@ import { usePostConversation, useConversationIdList, useConversationDetails } fr
 import ListFlights from './custom-ui/Listflights';
 import { FlightInfoData } from '../../types/api';
 import { BoardingPass } from './custom-ui/Boardingpass';
-import CustomButtons from './CustomButtons';
+import { PurchaseTickets } from './custom-ui/Purchasetickets';
 import LogoutButton from '../common/LogoutButton';
 
 type Message = {
@@ -54,19 +54,36 @@ const ChatInterface: React.FC = () => {
       console.log('가져온 상세 대화 데이터:', conversationDetails);
       const existingMessages: Message[] = conversationDetails.pairing.flatMap((pair) => {
         console.log('개별 페어 데이터:', pair);
+
         const userMessage: Message = { role: 'user', content: pair.request_message };
 
-        const assistantMessage: Message = {
-          role: 'assistant',
-          content:
-            pair.response_type === 'get_flight_info' && pair.data
-              ? renderFlightInfo(pair.data as FlightInfoData)
-              : pair.response_type === 'book_flight' && pair.data
-                ? renderBoardingPass(pair.data)
-                : logPlainTextResponse(pair.response_message),
-        };
+        const assistantMessages: Message[] = [];
 
-        return [userMessage, assistantMessage];
+        if (pair.response_type === 'book_flight' && pair.data) {
+          // PurchaseTickets 복원
+          assistantMessages.push({
+            role: 'assistant',
+            content: renderPurchaseTickets(pair.data), // 상태 기반 UI 복원
+          });
+
+          // BoardingPass 추가
+          assistantMessages.push({
+            role: 'assistant',
+            content: renderBoardingPass(pair.data),
+          });
+        } else if (pair.response_type === 'get_flight_info' && pair.data) {
+          assistantMessages.push({
+            role: 'assistant',
+            content: renderFlightInfo(pair.data as FlightInfoData),
+          });
+        } else {
+          assistantMessages.push({
+            role: 'assistant',
+            content: logPlainTextResponse(pair.response_message),
+          });
+        }
+
+        return [userMessage, ...assistantMessages];
       });
 
       setMessages(existingMessages);
@@ -115,6 +132,38 @@ const ChatInterface: React.FC = () => {
     );
   };
 
+  const renderPurchaseTickets = (data: any) => {
+    // 상태를 복원하기 위해 데이터 기반으로 결정
+    const currentStatus = data.is_completed ? 'completed' : 'requires_confirmation';
+
+    return (
+      <PurchaseTickets
+        initialStatus={currentStatus}
+        summary={{
+          airline: data.airline || '퍼플 에어',
+          arrival: data.destination_code || '도쿄',
+          departure: data.departure_code || '서울',
+          departureTime: data.departure_time || '09:00',
+          arrivalTime: data.arrival_time || '11:30',
+          price: data.price || 350000,
+          seat: data.seat || '12A',
+          date: data.date || '2024-03-15',
+          gate: data.gate || '23',
+          name: data.name || '김철수',
+          class: data.class || '이코노미',
+        }}
+        onComplete={() => {
+          // BoardingPass 추가
+          const boardingPassMessage: Message = {
+            role: 'assistant',
+            content: renderBoardingPass(data),
+          };
+          setMessages((prev) => [...prev, boardingPassMessage]);
+        }}
+      />
+    );
+  };
+
   const logPlainTextResponse = (responseMessage: string) => {
     return responseMessage;
   };
@@ -122,10 +171,7 @@ const ChatInterface: React.FC = () => {
   const handleSendMessage = async () => {
     if (userInput.trim()) {
       const newUserMessage: Message = { role: 'user', content: userInput };
-      const placeholderAssistantMessage: Message = {
-        role: 'assistant',
-        content: <LoadingMessage />,
-      };
+      const placeholderAssistantMessage: Message = { role: 'assistant', content: <LoadingMessage /> };
 
       setMessages((prev) => [...prev, newUserMessage, placeholderAssistantMessage]);
 
@@ -140,21 +186,25 @@ const ChatInterface: React.FC = () => {
         });
 
         if (response) {
-          const assistantMessage: Message = {
-            role: 'assistant',
-            content:
-              response.response_type === 'get_flight_info' && response.data
-                ? renderFlightInfo(response.data as FlightInfoData)
-                : response.response_type === 'book_flight' && response.data
-                  ? renderBoardingPass(response.data)
+          if (response.response_type === 'book_flight' && response.data) {
+            const purchaseMessage: Message = {
+              role: 'assistant',
+              content: renderPurchaseTickets(response.data), // 상세 데이터 전달
+            };
+            setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? purchaseMessage : msg)));
+          } else {
+            const assistantMessage: Message = {
+              role: 'assistant',
+              content:
+                response.response_type === 'get_flight_info' && response.data
+                  ? renderFlightInfo(response.data as FlightInfoData)
                   : logPlainTextResponse(response.answer || '응답이 없습니다.'),
-          };
-
-          setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
+            };
+            setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
+          }
         }
       } catch (error) {
         console.error('API 요청 중 오류 발생:', error);
-
         const errorMessage: Message = { role: 'assistant', content: '죄송합니다. 오류가 발생했습니다.' };
         setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? errorMessage : msg)));
       }
@@ -198,11 +248,11 @@ const ChatInterface: React.FC = () => {
           )}
           <div ref={messagesEndRef} />
         </div>
-        <div className="flex justify-center mb-0">
+        {/* <div className="flex justify-center mb-0">
           <CustomButtons
             onCustomMessage={(component) => setMessages([...messages, { role: 'assistant', content: component }])}
           />
-        </div>
+        </div> */}
         <div className="bg-gray-100 p-2 flex justify-center items-center" style={{ gap: '8px', marginBottom: '20px' }}>
           <select
             value={selectedAirline}
