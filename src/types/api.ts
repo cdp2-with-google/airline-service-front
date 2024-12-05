@@ -1,7 +1,10 @@
 //C:\HYUNWOO\react\airline-service(1128-2)\airline-service-front\src\types\api.ts
 // Conversation ID 목록을 가져오는 API의 응답 타입
 export type ConversationIdListResponse = {
-  list: number[];
+  list: {
+    conversation_id: number;
+    title: string;
+  }[];
 };
 
 // 특정 대화의 상세 정보를 가져오는 API의 응답 타입

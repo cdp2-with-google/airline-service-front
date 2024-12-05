@@ -33,8 +33,11 @@ const ChatInterface: React.FC = () => {
 
   useEffect(() => {
     if (conversationIds) {
+      console.log('ConversationIdListResponse 데이터:', conversationIds);
+
       if (conversationIds.list.length > 0) {
-        const recentConversationId = Math.max(...conversationIds.list);
+        // conversation_id 값만 추출
+        const recentConversationId = Math.max(...conversationIds.list.map((item) => item.conversation_id));
         setConversationId(recentConversationId);
       } else {
         setConversationId(null);
@@ -220,15 +223,18 @@ const ChatInterface: React.FC = () => {
       <LogoutButton />
 
       <Sidebar
-        conversationIds={conversationIds ? conversationIds.list : []}
+        conversationIds={
+          conversationIds ? conversationIds.list.map(({ conversation_id, title }) => ({ conversation_id, title })) : []
+        } // 데이터 변환
         selectedConversationId={conversationId}
-        onSelectConversation={(id) => setConversationId(id)}
+        onSelectConversation={(id) => setConversationId(id)} // conversation_id 전달
         onNewConversation={() => {
           setConversationId(null);
           setMessages([]);
         }}
         isLoading={isLoadingConversationIds}
       />
+
       <div className="flex-1 flex flex-col">
         <div className="flex-grow overflow-y-auto p-4">
           {isLoadingConversationDetails && conversationId !== null ? (
