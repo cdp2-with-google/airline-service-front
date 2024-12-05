@@ -41,6 +41,7 @@ export interface PostConversationResponse {
   title: string; // 대화 제목
   answer: string; // 응답 메시지
   data: PlainTextData | FlightInfoData | BoardingPassData | null; // 응답에 따라 데이터 구조 변경
+  create_time: string; // 응답 생성 시간 (UTC 시간)
 }
 
 // Plain Text 응답 타입

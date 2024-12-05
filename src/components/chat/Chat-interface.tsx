@@ -31,6 +31,17 @@ const ChatInterface: React.FC = () => {
 
   const { handlePostConversation } = usePostConversation();
 
+  const formatKoreanTime = (gmtTime: string) => {
+    const date = new Date(gmtTime);
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'Asia/Seoul',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat('ko-KR', options).format(date);
+  };
+
   useEffect(() => {
     if (conversationIds) {
       console.log('ConversationIdListResponse 데이터:', conversationIds);
@@ -52,33 +63,55 @@ const ChatInterface: React.FC = () => {
     }
   }, [conversationId, refetch]);
 
+  // 기존 메시지 처리 (get API 데이터 반영)
   useEffect(() => {
     if (conversationDetails) {
       console.log('가져온 상세 대화 데이터:', conversationDetails);
-      const existingMessages: Message[] = conversationDetails.pairing.flatMap((pair) => {
-        console.log('개별 페어 데이터:', pair);
+      const existingMessages = conversationDetails.pairing.flatMap((pair) => {
+        const userMessage: Message = {
+          role: 'user',
+          content: (
+            <div>
+              <p>{pair.request_message}</p>
+              <span className="text-gray-400 text-xs">{formatKoreanTime(pair.create_time)}</span>
+            </div>
+          ),
+        };
 
-        const userMessage: Message = { role: 'user', content: pair.request_message };
-        const assistantMessages: Message[] = [];
-
+        let assistantMessage: Message;
         if (pair.response_type === 'book_flight' && pair.data) {
-          assistantMessages.push({
+          assistantMessage = {
             role: 'assistant',
-            content: renderPurchaseTickets(pair.data, pair.id), // pair.id 전달
-          });
+            content: (
+              <div>
+                {renderPurchaseTickets(pair.data, pair.id)}
+                <span className="text-gray-400 text-xs float-right">{formatKoreanTime(pair.create_time)}</span>
+              </div>
+            ),
+          };
         } else if (pair.response_type === 'get_flight_info' && pair.data) {
-          assistantMessages.push({
+          assistantMessage = {
             role: 'assistant',
-            content: renderFlightInfo(pair.data as FlightInfoData),
-          });
+            content: (
+              <div>
+                {renderFlightInfo(pair.data as FlightInfoData)}
+                <span className="text-gray-400 text-xs float-right">{formatKoreanTime(pair.create_time)}</span>
+              </div>
+            ),
+          };
         } else {
-          assistantMessages.push({
+          assistantMessage = {
             role: 'assistant',
-            content: logPlainTextResponse(pair.response_message),
-          });
+            content: (
+              <div>
+                <p>{pair.response_message}</p>
+                <span className="text-gray-400 text-xs float-right">{formatKoreanTime(pair.create_time)}</span>
+              </div>
+            ),
+          };
         }
 
-        return [userMessage, ...assistantMessages];
+        return [userMessage, assistantMessage];
       });
 
       setMessages(existingMessages);
@@ -95,37 +128,20 @@ const ChatInterface: React.FC = () => {
     }));
 
     return (
-      <ListFlights
-        flights={transformedFlights}
-        summary={{
-          arrivalCity: data.destination,
-          departingCity: data.departure,
-          arrivalAirport: data.destination_code,
-          departingAirport: data.departure_code,
-          date: data.date,
-        }}
-      />
+      <div style={{ marginBottom: '16px' }}>
+        <ListFlights
+          flights={transformedFlights}
+          summary={{
+            arrivalCity: data.destination,
+            departingCity: data.departure,
+            arrivalAirport: data.destination_code,
+            departingAirport: data.departure_code,
+            date: data.date,
+          }}
+        />
+      </div>
     );
   };
-
-  // const renderBoardingPass = (data: any) => {
-  //   return (
-  //     <BoardingPass
-  //       summary={{
-  //         airline: data.airline,
-  //         arrival: data.destination_code,
-  //         departure: data.departure_code,
-  //         departureTime: data.departure_time,
-  //         arrivalTime: data.arrival_time,
-  //         seat: data.seat,
-  //         date: data.date,
-  //         gate: data.gate,
-  //         name: data.name,
-  //         class: data.class,
-  //       }}
-  //     />
-  //   );
-  // };
 
   const renderPurchaseTickets = (data: any, pairingId: number) => {
     const key = `conversation_${conversationId}_pair_${pairingId}`;
@@ -135,28 +151,30 @@ const ChatInterface: React.FC = () => {
     console.log('상태 복원 확인 - 키:', key, '상태:', isCompleted ? 'completed' : 'requires_confirmation');
 
     return (
-      <PurchaseTickets
-        initialStatus={initialStatus}
-        summary={{
-          airline: data.airline || '퍼플 에어',
-          arrival: data.destination_code || '도쿄',
-          departure: data.departure_code || '서울',
-          departureTime: data.departure_time || '09:00',
-          arrivalTime: data.arrival_time || '11:30',
-          price: data.price || 350000,
-          seat: data.seat || '12A',
-          date: data.date || '2024-03-15',
-          gate: data.gate || '23',
-          name: data.name || '김철수',
-          class: data.class || '이코노미',
-        }}
-        onComplete={() => {
-          // 상태 저장
-          localStorage.setItem(key, 'completed');
-          console.log('onComplete 호출됨 - 키 저장:', key);
-          console.log('로컬스토리지 저장 확인:', localStorage.getItem(key));
-        }}
-      />
+      <div style={{ marginBottom: '16px' }}>
+        <PurchaseTickets
+          initialStatus={initialStatus}
+          summary={{
+            airline: data.airline || '퍼플 에어',
+            arrival: data.destination_code || '도쿄',
+            departure: data.departure_code || '서울',
+            departureTime: data.departure_time || '09:00',
+            arrivalTime: data.arrival_time || '11:30',
+            price: data.price || 350000,
+            seat: data.seat || '12A',
+            date: data.date || '2024-03-15',
+            gate: data.gate || '23',
+            name: data.name || '김철수',
+            class: data.class || '이코노미',
+          }}
+          onComplete={() => {
+            // 상태 저장
+            localStorage.setItem(key, 'completed');
+            console.log('onComplete 호출됨 - 키 저장:', key);
+            console.log('로컬스토리지 저장 확인:', localStorage.getItem(key));
+          }}
+        />
+      </div>
     );
   };
 
@@ -166,8 +184,24 @@ const ChatInterface: React.FC = () => {
 
   const handleSendMessage = async () => {
     if (userInput.trim()) {
-      const newUserMessage: Message = { role: 'user', content: userInput };
-      const placeholderAssistantMessage: Message = { role: 'assistant', content: <LoadingMessage /> };
+      const currentTime = formatKoreanTime(new Date().toISOString());
+
+      // 사용자 메시지 추가
+      const newUserMessage: Message = {
+        role: 'user',
+        content: (
+          <div>
+            <p>{userInput}</p>
+            <span className="text-gray-400 text-xs">{currentTime}</span>
+          </div>
+        ),
+      };
+
+      // 로딩 메시지 추가
+      const placeholderAssistantMessage: Message = {
+        role: 'assistant',
+        content: <LoadingMessage />, // LoadingMessage 표시
+      };
 
       setMessages((prev) => [...prev, newUserMessage, placeholderAssistantMessage]);
 
@@ -182,27 +216,58 @@ const ChatInterface: React.FC = () => {
         });
 
         if (response) {
+          const responseTime = formatKoreanTime(response.create_time);
+
+          let assistantMessage: Message;
           if (response.response_type === 'book_flight' && response.data) {
-            const pairingId = Date.now(); // 고유 ID 생성
-            const purchaseMessage: Message = {
+            assistantMessage = {
               role: 'assistant',
-              content: renderPurchaseTickets(response.data, pairingId), // 두 번째 인수 pairingId 전달
+              content: (
+                <div>
+                  {renderPurchaseTickets(response.data, Date.now())}
+                  <span className="text-gray-400 text-xs float-right">{responseTime}</span>
+                </div>
+              ),
             };
-            setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? purchaseMessage : msg)));
+          } else if (response.response_type === 'get_flight_info' && response.data) {
+            assistantMessage = {
+              role: 'assistant',
+              content: (
+                <div>
+                  {renderFlightInfo(response.data as FlightInfoData)}
+                  <span className="text-gray-400 text-xs float-right">{responseTime}</span>
+                </div>
+              ),
+            };
           } else {
-            const assistantMessage: Message = {
+            assistantMessage = {
               role: 'assistant',
-              content:
-                response.response_type === 'get_flight_info' && response.data
-                  ? renderFlightInfo(response.data as FlightInfoData)
-                  : logPlainTextResponse(response.answer || '응답이 없습니다.'),
+              content: (
+                <div>
+                  <p>{response.answer || '응답이 없습니다.'}</p>
+                  <span className="text-gray-400 text-xs float-right">{responseTime}</span>
+                </div>
+              ),
             };
-            setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
           }
+
+          // 로딩 메시지를 실제 응답 메시지로 대체
+          setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? assistantMessage : msg)));
         }
       } catch (error) {
         console.error('API 요청 중 오류 발생:', error);
-        const errorMessage: Message = { role: 'assistant', content: '죄송합니다. 오류가 발생했습니다.' };
+
+        const errorMessage: Message = {
+          role: 'assistant',
+          content: (
+            <div>
+              <p>죄송합니다. 오류가 발생했습니다.</p>
+              <span className="text-gray-400 text-xs">{currentTime}</span>
+            </div>
+          ),
+        };
+
+        // 로딩 메시지를 에러 메시지로 대체
         setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? errorMessage : msg)));
       }
     }
