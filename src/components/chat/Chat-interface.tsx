@@ -56,20 +56,12 @@ const ChatInterface: React.FC = () => {
         console.log('개별 페어 데이터:', pair);
 
         const userMessage: Message = { role: 'user', content: pair.request_message };
-
         const assistantMessages: Message[] = [];
 
         if (pair.response_type === 'book_flight' && pair.data) {
-          // PurchaseTickets 복원
           assistantMessages.push({
             role: 'assistant',
-            content: renderPurchaseTickets(pair.data), // 상태 기반 UI 복원
-          });
-
-          // BoardingPass 추가
-          assistantMessages.push({
-            role: 'assistant',
-            content: renderBoardingPass(pair.data),
+            content: renderPurchaseTickets(pair.data, pair.id), // pair.id 전달
           });
         } else if (pair.response_type === 'get_flight_info' && pair.data) {
           assistantMessages.push({
@@ -113,32 +105,35 @@ const ChatInterface: React.FC = () => {
     );
   };
 
-  const renderBoardingPass = (data: any) => {
-    return (
-      <BoardingPass
-        summary={{
-          airline: data.airline,
-          arrival: data.destination_code,
-          departure: data.departure_code,
-          departureTime: data.departure_time,
-          arrivalTime: data.arrival_time,
-          seat: data.seat,
-          date: data.date,
-          gate: data.gate,
-          name: data.name,
-          class: data.class,
-        }}
-      />
-    );
-  };
+  // const renderBoardingPass = (data: any) => {
+  //   return (
+  //     <BoardingPass
+  //       summary={{
+  //         airline: data.airline,
+  //         arrival: data.destination_code,
+  //         departure: data.departure_code,
+  //         departureTime: data.departure_time,
+  //         arrivalTime: data.arrival_time,
+  //         seat: data.seat,
+  //         date: data.date,
+  //         gate: data.gate,
+  //         name: data.name,
+  //         class: data.class,
+  //       }}
+  //     />
+  //   );
+  // };
 
-  const renderPurchaseTickets = (data: any) => {
-    // 상태를 복원하기 위해 데이터 기반으로 결정
-    const currentStatus = data.is_completed ? 'completed' : 'requires_confirmation';
+  const renderPurchaseTickets = (data: any, pairingId: number) => {
+    const key = `conversation_${conversationId}_pair_${pairingId}`;
+    const isCompleted = localStorage.getItem(key) === 'completed';
+    const initialStatus = isCompleted ? 'completed' : 'requires_confirmation';
+
+    console.log('상태 복원 확인 - 키:', key, '상태:', isCompleted ? 'completed' : 'requires_confirmation');
 
     return (
       <PurchaseTickets
-        initialStatus={currentStatus}
+        initialStatus={initialStatus}
         summary={{
           airline: data.airline || '퍼플 에어',
           arrival: data.destination_code || '도쿄',
@@ -153,12 +148,10 @@ const ChatInterface: React.FC = () => {
           class: data.class || '이코노미',
         }}
         onComplete={() => {
-          // BoardingPass 추가
-          const boardingPassMessage: Message = {
-            role: 'assistant',
-            content: renderBoardingPass(data),
-          };
-          setMessages((prev) => [...prev, boardingPassMessage]);
+          // 상태 저장
+          localStorage.setItem(key, 'completed');
+          console.log('onComplete 호출됨 - 키 저장:', key);
+          console.log('로컬스토리지 저장 확인:', localStorage.getItem(key));
         }}
       />
     );
@@ -187,9 +180,10 @@ const ChatInterface: React.FC = () => {
 
         if (response) {
           if (response.response_type === 'book_flight' && response.data) {
+            const pairingId = Date.now(); // 고유 ID 생성
             const purchaseMessage: Message = {
               role: 'assistant',
-              content: renderPurchaseTickets(response.data), // 상세 데이터 전달
+              content: renderPurchaseTickets(response.data, pairingId), // 두 번째 인수 pairingId 전달
             };
             setMessages((prev) => prev.map((msg, index) => (index === prev.length - 1 ? purchaseMessage : msg)));
           } else {

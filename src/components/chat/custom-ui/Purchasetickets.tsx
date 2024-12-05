@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { User, CreditCard, Lock, Sparkles } from 'lucide-react';
+import { User, CreditCard, Lock } from 'lucide-react';
 import airlineLogo from '../../../assets/koreanair.png';
+import { BoardingPass } from './Boardingpass';
 
 type Status = 'requires_confirmation' | 'requires_code' | 'completed' | 'failed' | 'expired' | 'in_progress';
 
@@ -48,6 +49,8 @@ export const PurchaseTickets: React.FC<PurchaseProps> = ({
 
   const handleSubmitCode = () => {
     setCurrentStatus('completed');
+
+    // 로컬스토리지에 상태 저장
     if (onComplete) {
       onComplete();
     }
@@ -119,7 +122,7 @@ export const PurchaseTickets: React.FC<PurchaseProps> = ({
                   <CreditCard className="text-gray-600" />
                   <h4 className="font-medium text-gray-700">가격 정보</h4>
                 </div>
-                <p className="text-sm text-gray-600">₩{summary.price?.toLocaleString() ?? 'N/A'}원</p>
+                <p className="text-sm text-gray-600">{Number(summary.price)?.toLocaleString('ko-KR') ?? 'N/A'}원</p>
               </div>
             </div>
           </div>
@@ -128,13 +131,13 @@ export const PurchaseTickets: React.FC<PurchaseProps> = ({
             className="p-2 text-center rounded-full cursor-pointer bg-gray-600 text-white hover:bg-gray-700 transition-colors"
             onClick={handleConfirmPurchase}
           >
-            ₩{summary.price?.toLocaleString()} 결제하기
+            {Number(summary.price)?.toLocaleString('ko-KR')}원 결제하기
           </button>
         </div>
       )}
       {currentStatus === 'requires_code' && (
         <>
-          <div className="text-gray-700">구매를 완료하려면 휴대폰 (***) *** 1111로 전송된 코드를 입력하세요.</div>
+          <div className="text-gray-700">구매를 완료하려면 휴대폰 (***) **** 1524로 전송된 코드를 입력하세요.</div>
           <div className="flex justify-center p-2 text-center border rounded-full text-gray-700">
             <input
               className="w-32 text-center bg-transparent outline-none"
@@ -147,8 +150,13 @@ export const PurchaseTickets: React.FC<PurchaseProps> = ({
             />
           </div>
           <button
-            className="p-2 text-center rounded-full cursor-pointer bg-gray-600 text-white hover:bg-gray-700 transition-colors"
+            className={`p-2 text-center rounded-full cursor-pointer ${
+              code.length === 6
+                ? 'bg-gray-600 text-white hover:bg-gray-700'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            } transition-colors`}
             onClick={handleSubmitCode}
+            disabled={code.length !== 6}
           >
             제출
           </button>
@@ -158,6 +166,9 @@ export const PurchaseTickets: React.FC<PurchaseProps> = ({
         <div className="text-center text-gray-700">
           <p className="font-bold text-lg">구매가 완료되었습니다!</p>
           <p>구글 캘린더에 비행일정이 추가되었습니다.</p>
+          <div className="mt-4">
+            <BoardingPass summary={summary} />
+          </div>
         </div>
       )}
     </div>
