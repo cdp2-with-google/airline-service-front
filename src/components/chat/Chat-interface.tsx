@@ -8,6 +8,7 @@ import ListFlights from './custom-ui/Listflights';
 import { FlightInfoData } from '../../types/api';
 import { PurchaseTickets } from './custom-ui/Purchasetickets';
 import LogoutButton from '../common/LogoutButton';
+import ReactMarkdown from 'react-markdown';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -100,7 +101,7 @@ const ChatInterface: React.FC = () => {
             role: 'assistant',
             content: (
               <div>
-                <p>{pair.response_message}</p>
+                <ReactMarkdown>{pair.response_message}</ReactMarkdown>
                 <span className="text-gray-400 text-xs float-right">{formatKoreanTime(pair.create_time)}</span>
               </div>
             ),
