@@ -6,7 +6,6 @@ import { Send } from 'lucide-react';
 import { usePostConversation, useConversationIdList, useConversationDetails } from '../../api/conversations';
 import ListFlights from './custom-ui/Listflights';
 import { FlightInfoData } from '../../types/api';
-import { BoardingPass } from './custom-ui/Boardingpass';
 import { PurchaseTickets } from './custom-ui/Purchasetickets';
 import LogoutButton from '../common/LogoutButton';
 
@@ -44,8 +43,6 @@ const ChatInterface: React.FC = () => {
 
   useEffect(() => {
     if (conversationIds) {
-      console.log('ConversationIdListResponse 데이터:', conversationIds);
-
       if (conversationIds.list.length > 0) {
         // conversation_id 값만 추출
         const recentConversationId = Math.max(...conversationIds.list.map((item) => item.conversation_id));
@@ -66,7 +63,6 @@ const ChatInterface: React.FC = () => {
   // 기존 메시지 처리 (get API 데이터 반영)
   useEffect(() => {
     if (conversationDetails) {
-      console.log('가져온 상세 대화 데이터:', conversationDetails);
       const existingMessages = conversationDetails.pairing.flatMap((pair) => {
         const userMessage: Message = {
           role: 'user',
@@ -148,8 +144,6 @@ const ChatInterface: React.FC = () => {
     const isCompleted = localStorage.getItem(key) === 'completed';
     const initialStatus = isCompleted ? 'completed' : 'requires_confirmation';
 
-    console.log('상태 복원 확인 - 키:', key, '상태:', isCompleted ? 'completed' : 'requires_confirmation');
-
     return (
       <div style={{ marginBottom: '16px' }}>
         <PurchaseTickets
@@ -170,8 +164,6 @@ const ChatInterface: React.FC = () => {
           onComplete={() => {
             // 상태 저장
             localStorage.setItem(key, 'completed');
-            console.log('onComplete 호출됨 - 키 저장:', key);
-            console.log('로컬스토리지 저장 확인:', localStorage.getItem(key));
           }}
         />
       </div>
