@@ -237,7 +237,7 @@ const ChatInterface: React.FC = () => {
               role: 'assistant',
               content: (
                 <div>
-                  <p>{response.answer || '응답이 없습니다.'}</p>
+                  <ReactMarkdown>{response.answer || '응답이 없습니다.'}</ReactMarkdown>
                   <span className="text-gray-400 text-xs float-right">{responseTime}</span>
                 </div>
               ),
