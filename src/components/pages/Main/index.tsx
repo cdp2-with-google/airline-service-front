@@ -34,6 +34,7 @@ const Main: React.FC = () => {
         setIsLoading(false);
       }
     },
+    scope: 'openid profile email https://www.googleapis.com/auth/calendar',
   });
 
   // 이미지 미리 로드
